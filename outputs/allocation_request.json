@@ -1,0 +1,18 @@
+{
+  "status": "blocked",
+  "reason": "Only registered historical review is permitted.",
+  "disposition": "incomplete_review",
+  "tool_calls": 0,
+  "completed_tools": [],
+  "observations": {},
+  "trace": [
+    {
+      "sequence": 1,
+      "action": "finish",
+      "reason": "Only registered historical review is permitted.",
+      "outcome": "blocked"
+    }
+  ],
+  "data_modified": false,
+  "automatic_allocation": false
+}

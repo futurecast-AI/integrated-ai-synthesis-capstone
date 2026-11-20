@@ -1,0 +1,92 @@
+{
+  "status": "failed",
+  "reason": "No retry and no approval inferred from partial evidence.",
+  "disposition": "incomplete_review",
+  "tool_calls": 4,
+  "completed_tools": [
+    "load",
+    "quality",
+    "split"
+  ],
+  "observations": {
+    "load": {
+      "rows": 17379,
+      "columns": 17,
+      "source": "declared test fixture"
+    },
+    "quality": {
+      "issues": [],
+      "missing_cells": 0,
+      "duplicate_keys": 0,
+      "invalid_category_columns": [],
+      "scope": "Configured structural/range checks; no quality certification or automatic cleaning."
+    },
+    "split": {
+      "development_rows": 13891,
+      "test_rows": 3488,
+      "development_end": "2012-08-06 23:00:00",
+      "test_start": "2012-08-07 00:00:00",
+      "test_end": "2012-12-31 23:00:00",
+      "test_dates": 147,
+      "unrecorded_clock_hours": 165
+    }
+  },
+  "trace": [
+    {
+      "sequence": 1,
+      "action": "load",
+      "reason": "Load the registered read-only source.",
+      "outcome": "requested"
+    },
+    {
+      "sequence": 2,
+      "action": "load",
+      "reason": "Aggregate observation stored in fresh run-local memory.",
+      "outcome": "observed"
+    },
+    {
+      "sequence": 3,
+      "action": "quality",
+      "reason": "Observe required schema, completeness, keys and configured ranges.",
+      "outcome": "requested"
+    },
+    {
+      "sequence": 4,
+      "action": "quality",
+      "reason": "Aggregate observation stored in fresh run-local memory.",
+      "outcome": "observed"
+    },
+    {
+      "sequence": 5,
+      "action": "split",
+      "reason": "Quality gate has no configured findings; isolate later dates.",
+      "outcome": "requested"
+    },
+    {
+      "sequence": 6,
+      "action": "split",
+      "reason": "Aggregate observation stored in fresh run-local memory.",
+      "outcome": "observed"
+    },
+    {
+      "sequence": 7,
+      "action": "model",
+      "reason": "Fit fixed Project 3 recipe on development only; score the later period.",
+      "outcome": "requested"
+    },
+    {
+      "sequence": 8,
+      "action": "model",
+      "reason": "Tool failed; remaining stages were not performed.",
+      "outcome": "error"
+    },
+    {
+      "sequence": 9,
+      "action": "finish",
+      "reason": "No retry and no approval inferred from partial evidence.",
+      "outcome": "failed"
+    }
+  ],
+  "data_modified": false,
+  "automatic_allocation": false
+}

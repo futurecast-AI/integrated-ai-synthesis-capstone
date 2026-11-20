@@ -1,0 +1,60 @@
+{
+  "status": "held",
+  "reason": "Quality findings block splitting, model fitting and diagnosis.",
+  "disposition": "human_review",
+  "tool_calls": 2,
+  "completed_tools": [
+    "load",
+    "quality"
+  ],
+  "observations": {
+    "load": {
+      "rows": 17380,
+      "columns": 17,
+      "source": "declared test fixture"
+    },
+    "quality": {
+      "issues": [
+        "duplicate_timestamp"
+      ],
+      "missing_cells": 0,
+      "duplicate_keys": 1,
+      "invalid_category_columns": [],
+      "scope": "Configured structural/range checks; no quality certification or automatic cleaning."
+    }
+  },
+  "trace": [
+    {
+      "sequence": 1,
+      "action": "load",
+      "reason": "Load the registered read-only source.",
+      "outcome": "requested"
+    },
+    {
+      "sequence": 2,
+      "action": "load",
+      "reason": "Aggregate observation stored in fresh run-local memory.",
+      "outcome": "observed"
+    },
+    {
+      "sequence": 3,
+      "action": "quality",
+      "reason": "Observe required schema, completeness, keys and configured ranges.",
+      "outcome": "requested"
+    },
+    {
+      "sequence": 4,
+      "action": "quality",
+      "reason": "Aggregate observation stored in fresh run-local memory.",
+      "outcome": "observed"
+    },
+    {
+      "sequence": 5,
+      "action": "finish",
+      "reason": "Quality findings block splitting, model fitting and diagnosis.",
+      "outcome": "held"
+    }
+  ],
+  "data_modified": false,
+  "automatic_allocation": false
+}

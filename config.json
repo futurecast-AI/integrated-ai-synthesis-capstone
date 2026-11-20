@@ -1,0 +1,30 @@
+{
+  "dataset_id": "bike_hourly_2011_2012",
+  "relative_path": "data/hour.csv",
+  "source_sha256": "e03de4ee4ef4dc376ac6e04bf829673c6269e8eba5c60fa121640fa2f829504f",
+  "max_bytes": 2000000,
+  "max_rows": 20000,
+  "max_tool_calls": 5,
+  "categorical": ["season", "yr", "mnth", "hr", "holiday", "weekday", "workingday", "weathersit"],
+  "numeric": ["temp", "atemp", "hum", "windspeed"],
+  "allowed_categories": {
+    "season": [1, 2, 3, 4],
+    "yr": [0, 1],
+    "mnth": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    "hr": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+    "holiday": [0, 1],
+    "weekday": [0, 1, 2, 3, 4, 5, 6],
+    "workingday": [0, 1],
+    "weathersit": [1, 2, 3, 4]
+  },
+  "seed": 20261119,
+  "forest": {
+    "n_estimators": 150,
+    "max_depth": 14,
+    "min_samples_leaf": 2,
+    "max_features": 1.0,
+    "bootstrap": true,
+    "criterion": "squared_error",
+    "n_jobs": 1
+  }
+}
