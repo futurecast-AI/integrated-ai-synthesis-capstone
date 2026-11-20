@@ -4,7 +4,10 @@
   "source_sha256": "e03de4ee4ef4dc376ac6e04bf829673c6269e8eba5c60fa121640fa2f829504f",
   "max_bytes": 2000000,
   "max_rows": 20000,
-  "max_tool_calls": 5,
+  "max_tool_calls": 7,
+  "max_model_turns": 16,
+  "model": "MiniMax-M3",
+  "provider_timeout_seconds": 60,
   "categorical": ["season", "yr", "mnth", "hr", "holiday", "weekday", "workingday", "weathersit"],
   "numeric": ["temp", "atemp", "hum", "windspeed"],
   "allowed_categories": {

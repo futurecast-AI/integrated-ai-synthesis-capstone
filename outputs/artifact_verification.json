@@ -1,0 +1,14 @@
+{
+  "credential_scan_files": 95,
+  "configured_key_values_found": false,
+  "common_key_patterns_found": false,
+  "report_pages": 10,
+  "defense_guide_pages": 6,
+  "notebook_executed_code_cells": 7,
+  "notebook_error_outputs": 0,
+  "offline_tests_working_environment": 54,
+  "offline_tests_clean_environment": 54,
+  "live_scenarios": 13,
+  "live_model_response_turns": 44,
+  "notebook_demo_is_separate": true
+}

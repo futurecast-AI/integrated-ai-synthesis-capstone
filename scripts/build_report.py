@@ -69,7 +69,7 @@ for heading, content in SECTIONS:
 page_break()
 append(19, "Figure 1")
 append(1).runs[0].add_picture(str(ROOT / "outputs/architecture_diagram.png"), width=Inches(6.5))
-caption = ("Note. New integrated workflow: Project 6's bounded control gates "
+caption = ("Note. Project 6's LLM selects actions within enforced guards for "
            "Project 3's model; predictions feed Project 2-style statistical "
            "interpretation. Findings, failures and budget limits retain human "
            "authority. No automatic allocation or source-data edits occur.")

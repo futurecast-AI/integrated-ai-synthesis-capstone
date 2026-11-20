@@ -1,67 +1,65 @@
-# Verification record
+# Verification of the revised Project 7 submission
 
-## Working environment and tests
+## Actual execution, not invented results
 
-Python 3.11.18; exact packages in the actual `pip freeze` requirements.
-`python -m pytest tests -q`: **27 passed**, saved in `outputs/validation.txt`.
-Python implementation/builders/tests compiled successfully.
+- Python 3.11.18/Linux; installed the LLM dependencies into the existing environment.
+- Created a separate Python 3.11 environment from the included actual pip freeze.
+- **54 offline tests passed in each environment.** These include scripted-model
+  guards and real deterministic numerical computation, not an LLM success rate.
+- Executed all seven notebook code cells with the clean environment's explicit
+  kernel; zero error outputs. The image cell was re-executed after improving
+  diagram readability; saved live-provider outputs were not fabricated.
+- The notebook's separate narrow demonstration made actual provider calls.
+- PDF/DOCX opened; report is ten pages and the focused defense guide six pages.
+  Rendered all pages and checked extracted text bounds; no out-of-page text.
+- The report has **1,814 body words**, 1,909 with headings/references.
+  Template styles, section geometry and headers are preserved by executable audit.
 
-Tests check original run order and bounded trace, exact scenario replay,
-six gate holds with no downstream fit, structured-request restrictions,
-failure/budget handling, fresh memory, fixture immutability, additional
-range/count/date checks, tampered-source rejection, unknown tools, whole-day
-partitioning, leakage exclusions, independently recomputed metric/rank values,
-paper sections/word counts, prior-artifact mapping, template preservation and
-the actual dependency freeze/source hash.
+## Current real-provider suite
 
-Compared all 3,488 new prediction and target values with the pinned Project 3
-output: every value matches exactly. This is a wiring/reproduction check,
-not an accuracy improvement or independent research validation.
+`outputs/llm_runs/run_manifest.json` fingerprints the implementation, evaluator
+and configuration. Thirteen designed cases contain **44 real AI response turns**
+across twelve live-response cases; the invalid structured request uses no model.
 
-The higher-demand group underestimates 1,337 of 1,413 recorded hours, supporting
-the report's plain statement that its busy-hour estimates are usually too low.
-The group is defined using actual outcomes and cannot identify future busy
-hours before those outcomes are known.
+| Case | Recorded outcome |
+|---|---|
+| Full historical review | completed, seven tools, full coverage |
+| Six flawed-input fixtures | held after two executions; no split or fitting |
+| Quality-only request | completed focused task, two tools, partial pipeline |
+| Hourly-only request | completed focused task, five tools; no other diagnostics |
+| Natural-language allocation | refused without tools; no full review inferred |
+| Invalid structured intent | blocked before model or tools |
+| Two-tool full-review budget | budget exhausted; incomplete |
+| Injected model-tool fault | failed after four attempts; no diagnostics |
 
-## Clean-environment reproduction
+“Completed” can mean a focused task ended with partial pipeline coverage.
+No “13/13 means general reliability” or “hallucination-free” claim is made.
+Future provider behavior and availability can differ.
 
-Created a fresh Python 3.11.18 environment from `requirements.txt` and a clean
-directory containing only implementation, configuration, notebook and original
-CSV. No old outputs were copied.
+## Numerical continuity
 
-Ran the notebook top to bottom. Every generated JSON/CSV matched the original
-byte-for-byte: ten scenario records, all test predictions, daily/hourly
-diagnostics, scenario summary, source-integrity record and runtime versions.
-This verifies the specified stack, not every platform or package combination.
+`outputs/numerical_equivalence.json` compares the revised output with previous
+Project 7 commit `01a5d7916b57000faa6c44e55012dfa8cdd0ef81`.
+The loading, quality, split and model method sources are unchanged. Prediction,
+daily-diagnostic and hourly-diagnostic CSVs are byte-identical.
+Forest RMSE 104.6461, baseline 232.5588, MAE 72.5738 and R-squared .774754
+are preserved, as are the stress-group and daily rank-association statistics.
+This is integration reproduction on a previously seen benchmark, not independent
+generalization evidence or a new accuracy gain.
 
-## Source integrity and visual review
+## Retained negative evidence
 
-Original CSV SHA-256:
-`e03de4ee4ef4dc376ac6e04bf829673c6269e8eba5c60fa121640fa2f829504f`.
-Source hashes before and after the suite are identical; fixture copies are
-unchanged by the agent. The raw CSV retains its original CRLF line endings.
+- `first_live_suite` records attempted continuation/repetition after quality flags.
+  Application guards prevented downstream execution; permission feedback improved.
+- `second_live_suite` records a generated sign reversal, hours/days confusion
+  and an overclaim about baseline R-squared. Contracts now define signs and units.
+- `outputs/explanation_audit.json` records remaining unsupported interpretations
+  in current prose. Mechanism suggestions and “accurate” labels need evidence.
+- Raw model messages are unchanged. Computed observations and human-corrected
+  interpretation take precedence over fluent narrative.
 
-Viewed the full architecture image and all nine rendered PDF pages.
-No clipped content or missing pages found. The plain-language workflow
-explanation is on page 2; plain busy-hour interpretation is on page 6.
-
-The report has 1,564 body words. Counting headings/references gives 1,653;
-counting cover and caption text gives 1,713. Thus both body-only and inclusive
-document counts are within 1,500–2,000 words. Counts use whitespace-separated
-words and exclude the diagram's embedded raster labels and page fields.
-
-Template styles, section XML and existing header/footer parts were preserved.
-See `outputs/report_template_audit.json` for the source template and audit.
-The figure and references are included in the report and package.
-
-## Limits of evidence
-
-Ten purpose-built scenarios do not establish broad robustness or security.
-No live operator, station allocation, intervention, demographic fairness audit,
-causal analysis, cost saving or environmental benefit was tested.
-No OS isolation or wall-clock tool timeout is implemented.
-The earlier benchmark is already known and is not independent deployment evidence.
-
-There is no GitHub Actions workflow; local checks do not mean CI passed.
-Remote head/state/required checks are inspected separately after publication.
-No classroom submission or mentor defense has been completed by this workflow.
+No station-level fairness, real operational benefit, causal conclusion,
+comprehensive injection resistance, OS isolation or production readiness is
+established. No classroom submission, passing review, PR merge or defense was
+performed. Saved artifacts open offline; new LLM execution requires secure
+MiniMax access and may incur charges.

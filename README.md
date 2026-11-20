@@ -1,122 +1,130 @@
-# Integrated AI Synthesis — Bike-Share Evidence Review
+# Integrated AI Synthesis — LLM-Directed Bike-Share Evidence Review
 
-**AI Foundations (Edward Hickman) · Udacity · Project 7**
+**AI Foundations (Edward Hickman) · Udacity · Project 7, revised**
 
-A new offline workflow for urban bike-share planning discussions:
-**data-quality gate → retrospective rental estimates → error diagnosis →
-human evidence review**. No automatic allocation, data repairs, LLM, live API
-or paid service is involved.
+An industry-focused evidence system integrating:
 
-## Explicit three-project integration
+- **Project 2:** statistical interpretation, daily rank association and error groups.
+- **Project 3:** the unchanged fixed forest, mean baseline and chronological partition.
+- **Corrected Project 6:** a real MiniMax/LangGraph agent interpreting user instructions,
+  choosing tools, receiving observations and deciding its next action.
 
-- **Project 2 — Statistical Analysis:** transfer group summaries, Spearman
-  association and noncausal/plain-language interpretation to new error diagnostics.
-- **Project 3 — Machine Learning Foundations:** refit the same fixed forest,
-  mean baseline, twelve predictors and whole-date chronological split.
-- **Project 6 — Agentic Workflows:** adapt structured requests, bounded
-  read-only tools, run-local state, traces and stopping into a new orchestrator.
+The prior rule-only controller is superseded. This revision changes orchestration,
+not the predictive model or the meaning of the historical benchmark.
 
-This is not three notebooks placed together. Gate findings prevent fitting;
-actual fitted-model residuals are the inputs to the new statistical diagnosis.
-`PRIOR_PROJECT_MAP.md` identifies the exact earlier artifacts and immutable
-commits. `INTEGRATION_PLAN.md` was committed before execution.
+## What is agentic and what is enforced
 
-## Required submission and supporting files
+LangGraph alternates `llm_decision` and `read_only_tool`. The model selects tool
+names and public justifications, reads aggregate observations and chooses whether
+to continue or answer. Python does not choose a replacement action.
 
-- `integrated_synthesis.ipynb` — executed integrated artifact with complete
-  source display, diagram, original run, boundary scenarios and interpretation.
-- `integrated_system.py` — full standalone implementation and evaluation harness.
-- `module_summary.pdf` — nine-page APA synthesis paper; **1,564 body words**,
-  1,653 including headings/references, 1,713 including cover/caption text.
-- `outputs/architecture_diagram.png` — separate architecture diagram,
-  also embedded in the notebook and report.
-- `config.json`, `data/hour.csv`, `data/DATA_NOTICE.md` — full configuration
-  and unmodified attributed public data.
-- `requirements.txt` — actual working-environment `python -m pip freeze`.
+Seven tools: `load`, `quality`, `split`, `model`, `daily_association`,
+`hourly_errors`, `demand_stress`. The final three have the same prediction
+prerequisite but are independently selectable. An hourly-only request needs no
+daily association or demand stress; a quality-only request needs no model.
 
-The editable report, Markdown report, HTML notebook export, tests, scenario
-traces, predictions, diagnostic tables and provenance map are extras. Everything
-needed to run the integrated artifact is included; no separate prior-repository
-checkout or dataset download is required.
+Application guards enforce a registered dataset/intent, schema-valid calls,
+one tool per turn, dependencies, no repeats, seven executions and sixteen model
+turns. A quality finding prevents splitting/fitting regardless of model prose.
+Batch calls execute nothing and return feedback. A tool failure returns an error
+for the LLM to explain; no downstream tool is then permitted.
 
-## Reproduce
+Persona, natural-language instructions, messages, observations, counters and
+temporary frames are explicit in `integrated_system.py`. Each run starts fresh;
+there is no persistent memory, data repair, bike dispatch or general planner.
+Public action reasons are not hidden chain-of-thought.
 
-Tested on Python **3.11.18 / Linux**, using methods and libraries already used
-in the prior capstones:
+## Submission contents
+
+- `integrated_synthesis.ipynb`: executed source, real transcripts, live focused
+  demonstration, scenario table and interpretation.
+- `module_summary.pdf`: revised APA synthesis paper, all seven required sections.
+- `module_summary.docx` / `.md`: editable supporting report versions.
+- `integrated_system.py`, `evaluate_system.py`, `config.json`, bundled public data.
+- `outputs/architecture_diagram.png`: implemented system diagram.
+- `outputs/llm_runs`: current real evaluation, manifest, predictions and diagnostics.
+- `outputs/development_attempts/first_live_suite`: retained initial behavior,
+  including rejected attempts to continue after quality findings.
+- `outputs/numerical_equivalence.json`: evidence of unchanged numerical outputs.
+- `DEFENSE_UPDATE.md`: Project 7-only revised study/answer notes for Project 8.
+- `PRIOR_PROJECT_MAP.md`, `VERIFICATION.md`, tests and actual environment freeze.
+
+Everything needed for data/model computation is bundled. **New LLM runs require
+your own valid MiniMax text-API access and may incur charges.** No key is included.
+Viewing saved reports, HTML, notebooks or traces requires no account or key.
+
+## Install and run offline checks
+
+Prepared with Python **3.11.18 / Linux**:
 
 ```bash
 python3.11 -m venv .venv
 source .venv/bin/activate
-python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-python integrated_system.py
+python -m pip check
 python -m pytest tests -q
 ```
 
-The script writes evaluation outputs under `outputs/`. The agent's tools do
-not change source data. All model fitting occurs on the earlier-date partition;
-the saved artifact includes predictions, not a separately required serialized
-estimator. Running the script refits the fixed model.
+Software tests deliberately inject scripted AIMessage objects. They verify guards,
+observation feedback and state; they are not real LLM evaluations or a reliability
+percentage. Separate numerical tests refit the same fixed forest.
 
-Open `integrated_synthesis.ipynb` in Jupyter and restart/run all cells, or:
+## Execute real provider calls
+
+Set `MINIMAX_API_KEY` securely in your environment/Secrets, never in a file.
+`ChatOpenAI` is the LangChain compatibility client; requests go to MiniMax's
+`https://api.minimax.io/v1`, not OpenAI. Model: **MiniMax-M3**.
 
 ```bash
-python -m nbconvert --to notebook --execute --inplace integrated_synthesis.ipynb \
-  --ExecutePreprocessor.timeout=180
+python evaluate_system.py
+python -m nbconvert --execute --to notebook --inplace integrated_synthesis.ipynb \
+  --ExecutePreprocessor.timeout=600
+python -m nbconvert --to html integrated_synthesis.ipynb --output-dir outputs
 ```
 
-Run from the repository root so the notebook can import the implementation and
-find the bundled data. To intentionally rebuild notebook source and HTML:
+The evaluator overwrites `outputs/llm_runs`; save a copy first if preserving a run.
+The notebook makes a separate narrow live request and reads the saved full suite.
+Use a Python kernel belonging to the installed environment and inheriting the key.
+Provider failures are recorded, never replaced with fabricated responses.
+Future answers/tool sequences can vary; no exact-LLM-replay claim is made.
+
+## Results and limitations
+
+The full run uses 17,379 historical records, training on 13,891 and testing on
+3,488 over 147 dates. Forest RMSE **104.65** versus baseline **232.56**;
+MAE **72.57**, R-squared **.774754** (not classification accuracy).
+Higher-actual-demand MAE **123.80**, signed error **+119.74**, n=1,413;
+other MAE **37.69**, n=2,075. Threshold 258 is development-derived but membership
+uses actual outcomes. Daily temperature/residual Spearman **−.0771** is descriptive.
+This is the already-seen Project 3 benchmark, not independent validation.
+
+Thirteen designed scenarios include full/focused reviews, six flawed fixtures,
+allocation refusal, one pre-model structured rejection, a two-call budget and
+an injected model-tool failure. Read actual statuses, not an “all scenarios passed”
+claim. Initial model attempts to continue after quality findings are retained;
+guards stopped them and explicit permission feedback was added.
+
+Recorded rentals are not unmet demand; weather is observed, not forecast-time
+input. No station allocation, demographic/geographic fairness, cost/emissions
+benefit, causal inference, calibrated intervals or production readiness is shown.
+Only instructions and aggregate observations go to MiniMax. Generated prose can
+misinterpret results. Guards are not OS isolation, a global deadline, comprehensive
+prompt-injection protection or scientific certification.
+
+## Rebuild supporting artifacts
 
 ```bash
+python scripts/build_diagram.py
 python scripts/build_notebook.py
-python -m nbconvert --to notebook --execute --inplace integrated_synthesis.ipynb
-python -m nbconvert --to html integrated_synthesis.ipynb --output-dir outputs \
-  --output integrated_synthesis.html
+python scripts/build_report.py /path/to/course-APA-template.docx
 ```
 
-## Actual results and limits
+Notebook rebuilding clears outputs: execute it afterward before calling it an
+executed notebook. The report builder additionally needs the original course
+APA template and LibreOffice; the supplied PDF/DOCX do not need those tools to open.
+The template's styles, section setup and headers are preserved and audited.
+Instructor/due date were not supplied and are omitted.
 
-The original 17,379-row source passes the configured gate. The model fits 13,891
-earlier rows and scores 3,488 later rows over 147 dates. Forest RMSE **104.65**
-versus mean-baseline **232.56** rentals/hour exactly reproduces Project 3;
-this is **not independent validation on unseen research data**.
-
-New diagnostics show MAE **123.80** in 1,413 higher-demand hours versus **37.69**
-in 2,075 other hours; the development-derived threshold is 258 actual rentals.
-Higher-demand mean signed error is **+119.74** (actual minus prediction).
-Daily temperature/residual Spearman correlation is **−0.0771**, descriptive
-only, with no p-value or causal claim. The stress grouping uses actual test
-outcomes, so it cannot route future requests.
-
-Six deliberately flawed fixtures stop before fitting; an allocation request
-is blocked, a limited budget stops incomplete and an injected model failure
-prevents diagnosis. These designed scenarios are not field defects or a broad
-safety benchmark. **27 tests passed**; a fresh environment reproduced every
-scenario, prediction and daily/hourly diagnostic file exactly.
-
-Recorded rentals are not unmet demand. Weather is contemporaneously observed,
-not future forecast data. No station-level allocation, demographic fairness,
-cost saving, emissions benefit, prediction interval or production readiness is
-demonstrated. The rule gate is not complete scientific validation.
-
-## Report and academic integrity
-
-All seven required sections and five credible references are included,
-including scholarly sources. The report preserves the supplied course APA
-template's native styles, section geometry and headers. Arial is retained in
-the DOCX; LibreOffice substitutes Liberation Sans in PDF export. Instructor
-and due date were not supplied and are omitted.
-
-Rebuilding the report is optional and requires the original course template
-and LibreOffice in addition to the Python environment:
-
-```bash
-python scripts/build_report.py /path/to/course-apa-template.docx
-```
-
-The included PDF/DOCX can be opened without those authoring dependencies.
-AI assistance is disclosed. Edward must review, understand and personalize the
-work under course policy. Nothing automatically submits to Udacity or merges
-the draft PR. **Project 8's presentation and mentor defense are separate**;
-no slide deck or completed defense is claimed here.
+AI assistance in preparation, code, testing and drafting is disclosed. Edward
+must understand, review and personalize the work under course policy. No classroom
+submission, passed review, merged PR, live presentation or mentor booking is claimed.

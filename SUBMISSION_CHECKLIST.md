@@ -1,32 +1,19 @@
-# Project 7 submission checklist
+# Revised submission checklist
 
-## Included and verified
+- Open `module_summary.pdf`; review the seven required synthesis sections,
+  plain-language explanation, references, limitations and AI-assistance disclosure.
+- Open the executed `integrated_synthesis.ipynb` or its saved HTML. Inspect the
+  actual model/tool/observation loop, not just the architecture picture.
+- Confirm the revised Project 6 immutable source in `PRIOR_PROJECT_MAP.md`.
+- Inspect current `outputs/llm_runs` and the separately labeled initial attempts.
+- Review `VERIFICATION.md`, numerical-equivalence record, source fingerprint
+  and actual `requirements.txt`.
+- Keep code, data, config, report and diagram together in the replacement ZIP.
+- No credentials, local virtual environment, caches or Git directory belong in it.
+- New provider runs require secure MiniMax API access; saved evidence opens offline.
+- Review and personalize under course policy. No generated material proves mastery
+  or that a reviewer will pass the submission.
 
-- [x] New integrated industry artifact: urban bike-share evidence-review workflow.
-- [x] Three prior projects explicitly identified with immutable artifact versions.
-- [x] Meaningful data/control interaction, not a collection of old submissions.
-- [x] Runnable implementation, executed notebook and actual scenario outputs.
-- [x] Architecture diagram in report/notebook and supplied separately.
-- [x] 1,500–2,000-word `module_summary.pdf`: 1,564 body words.
-- [x] All seven required synthesis sections.
-- [x] Five credible APA references, including scholarly research.
-- [x] Prior-project-informed design reasoning and new error interpretation.
-- [x] Industry-specific access, underestimation, fairness and authority risks.
-- [x] Implemented controls distinguished from proposed deployment governance.
-- [x] Actual dataset, attribution, configuration and actual pip-freeze requirements.
-- [x] Twenty-seven tests passed and clean-environment output reproduction.
-- [x] AI assistance disclosed; no unmeasured benefit or deployment claim.
-
-## Edward's remaining steps
-
-- [ ] Review, understand and personalize the synthesis under course policy.
-- [ ] Upload the ZIP using the classroom's submission instructions.
-- [ ] If linking a repository before merge approval, link the draft PR or
-      development branch; initial `main` does not yet contain the full work.
-- [ ] Keep these artifacts for the separate Project 8 presentation/mentor defense.
-
-The ZIP contains everything required to execute the notebook/script offline
-after installing the frozen packages. Source files, configuration and data
-must stay together. No paid API, secret, prior-repository checkout or extra
-dataset download is required. Rebuilding, rather than opening, the report
-additionally requires the original APA template and LibreOffice.
+Upload the replacement package through the classroom's Project 7 submission flow.
+This repository and its draft PR do not submit coursework or merge themselves.
+Project 8's slides and live defense are separate; use revised Project 7 facts.

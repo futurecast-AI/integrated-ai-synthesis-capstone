@@ -1,0 +1,28 @@
+{
+  "status": "blocked",
+  "disposition": "incomplete_review",
+  "answer": "",
+  "tool_calls": 0,
+  "model_turns": 0,
+  "completed_tools": [],
+  "full_pipeline_coverage": false,
+  "observations": {},
+  "trace": [],
+  "messages": [],
+  "token_usage_by_turn": [],
+  "provider": "minimax",
+  "model": "MiniMax-M3",
+  "data_modified": false,
+  "automatic_allocation": false,
+  "scope": "Computed observations are authoritative; model prose requires human checking.",
+  "evaluation_request": {
+    "dataset_id": "bike_hourly_2011_2012",
+    "intent": "allocate_bikes",
+    "max_tool_calls": 7,
+    "scope": "full",
+    "instructions": "Review the historical bike-share data, model and all three error diagnostics. Explain limitations."
+  },
+  "evaluation_fixture": false,
+  "injected_tool_failure": null,
+  "evidence_type": "no_provider_response"
+}

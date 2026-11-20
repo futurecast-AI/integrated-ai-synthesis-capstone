@@ -2,7 +2,6 @@ from pathlib import Path
 from textwrap import dedent
 import nbformat as nbf
 
-
 ROOT = Path(__file__).resolve().parents[1]
 cells = []
 
@@ -16,266 +15,193 @@ def code(text):
 
 
 md("""
-# Bike-share evidence review: an integrated industry synthesis
-**AI Foundations (Edward Hickman) · Udacity · Project 7**
+# LLM-directed bike-share evidence review
+**AI Foundations (Edward Hickman) · Udacity · Project 7, revised**
 
-**Industry:** urban bike-share operations / sustainable transportation.
-**Problem:** before using a demand model in planning discussions, an analyst
-needs data checks, an honest baseline comparison and interpretable evidence of
-where errors are large. This prototype supplies that review evidence, not a
-production forecasting service or bike-allocation system.
+Urban bike-share analysts need inspectable evidence, not automatic dispatch.
+This revision integrates Project 2's statistical reasoning, Project 3's unchanged
+fixed rental model, and **corrected Project 6's real MiniMax/LangGraph agent**.
+The prior rule-only agentic contribution is superseded, not relabeled.
 
-Project 2 statistical reasoning → new error diagnostics; Project 3 fixed
-random-forest recipe → rental estimates; Project 6 bounded agentic patterns →
-control over whether the other components run. `PRIOR_PROJECT_MAP.md` identifies
-the actual prior artifacts and their immutable commits. `INTEGRATION_PLAN.md`
-records choices and cases before execution.
-
-AI assistance was used for coding, tests and drafting. Edward must understand,
-review and personalize this synthesis under course policy. No classroom
-submission, presentation or mentor defense is performed here.
-""")
-md("""
-## 1. The integration is functional, not a collection of old notebooks
-The new orchestrator sends the original CSV through a dataset-specific quality
-gate. Only an accepted table proceeds to date splitting and model fitting.
-Actual model predictions then become inputs to new daily/hourly error diagnostics.
-Every termination routes to a human, never an automatic dispatch action.
-
-The model recipe and benchmark are intentionally reused from Project 3:
-reproducing its metrics verifies wiring but is **not independent validation**.
-Project 2 contributes methods and interpretation, not its student records or
-school-study effect size. Project 6 contributes patterns, not its penguin data.
-No neural network, generator, LLM or new framework is added without a role.
+AI assisted with preparation, code, tests and drafting. Edward must review,
+understand and personalize the work under course policy. No claim of independent
+authorship, classroom acceptance, production deployment or completed defense.
 """)
 code("""
 from pathlib import Path
-import hashlib
-import inspect
-import json
-import platform
-import numpy as np
+import hashlib, inspect, json, platform
+from importlib.metadata import version
 import pandas as pd
-import scipy
-import sklearn
-import matplotlib.pyplot as plt
-from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
-from IPython.display import Code, display
+from IPython.display import Code, Image, display
 import integrated_system
-from integrated_system import CONFIG, FEATURES, ROOT, evaluate
+from integrated_system import ROOT, CONFIG, Request, SynthesisAgent
 
 OUT = Path("outputs")
-OUT.mkdir(exist_ok=True)
-versions = {"python": platform.python_version(), "numpy": np.__version__,
-            "pandas": pd.__version__, "scipy": scipy.__version__,
-            "scikit_learn": sklearn.__version__}
+SAVED = OUT / "llm_runs"
+versions = {"python": platform.python_version(),
+            **{p: version(p) for p in ["numpy", "pandas", "scipy", "scikit-learn",
+                                      "langgraph", "langchain-openai", "langchain-core"]}}
 (OUT / "runtime_versions.json").write_text(json.dumps(versions, indent=2) + "\\n")
 display(versions)
-raw = pd.read_csv("data/hour.csv")
-display(raw.head())
-print("Shape:", raw.shape)
-print("Original SHA-256:", hashlib.sha256(Path("data/hour.csv").read_bytes()).hexdigest())
-display(CONFIG)
+assert hashlib.sha256(Path("data/hour.csv").read_bytes()).hexdigest() == CONFIG["source_sha256"]
+print("Pinned public source: 17,379 records, 17 columns; no raw rows sent to the provider.")
 """)
 md("""
-## 2. Architecture, interfaces and responsibilities
-One rule-based controller has five tool names and a five-call ceiling.
-Each request gets a fresh state; it holds observations, completed tools,
-counter and trace, plus temporary data, split, predictions and diagnostic frames.
-The agent is not an LLM or a general planner.
+## 1. Architecture and responsibility
+The LLM interprets instructions and selects a tool or final response after each
+observation. LangGraph alternates decision and execution nodes. There is no
+Python-selected checklist. Dependencies enforce valid computation; after modeling,
+daily association, hourly errors and demand stress are independently selectable.
 
-`load` returns the registered table; `quality` returns aggregate findings;
-`split` creates whole-date partitions; `model` fits development data and returns
-test predictions and scores; `diagnose` consumes those predictions, not a
-separate unrelated dataset. Quality findings hold the run before splitting;
-failure/budget exhaustion stops without inferring approval.
-The harness writes evaluation artifacts; the tools do not edit input data.
+Python—not model persuasion—enforces registered data, read-only tools, quality
+holds, seven executions, sixteen model turns, one tool per turn and no repeats.
+Memory contains messages, observations, counters and temporary data for one run.
+Raw source records stay local; instructions and aggregate tool results go to MiniMax.
+Public reasons are brief justifications, not hidden chain-of-thought.
 """)
 code("""
-fig, ax = plt.subplots(figsize=(11, 7))
-ax.set(xlim=(0, 11), ylim=(0, 7))
-ax.axis("off")
-boxes = [
-    (0.25, 5.3, 2.7, 1.1, "Registered historical CSV\\nstructured review request"),
-    (4.0, 5.3, 3.0, 1.1, "Project 6 pattern\\nrequest gate + bounded control"),
-    (8.05, 5.15, 2.65, 1.4, "Fresh run-local state\\nobservations + completed\\ncounter + trace"),
-    (0.25, 2.9, 2.7, 1.2, "Data-quality gate\\nschema • keys • ranges\\nhold if findings"),
-    (4.0, 2.9, 3.0, 1.2, "Project 3 method\\nchronological split\\nfixed forest + mean baseline"),
-    (8.05, 2.9, 2.65, 1.2, "Project 2 methods\\ndaily rank association\\nhourly / demand error summaries"),
-    (3.4, 0.3, 4.2, 1.2, "Human evidence review\\ncomplete / held / failed / budget exhausted\\nno data edits or automatic bike allocation"),
-]
-for x, y, w, h, text in boxes:
-    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.05",
-                               edgecolor="#154C75", facecolor="#F5F5F5"))
-    ax.text(x+w/2, y+h/2, text, ha="center", va="center", fontsize=9.5)
-
-def arrow(start, end, text="", position=None):
-    ax.add_patch(FancyArrowPatch(start, end, arrowstyle="-|>", mutation_scale=14, color="#154C75"))
-    if position:
-        ax.text(*position, text, ha="center", va="center", fontsize=9,
-                bbox={"facecolor": "white", "edgecolor": "none", "pad": 1})
-
-arrow((3.05, 5.85), (3.9, 5.85))
-arrow((7.1, 6.05), (7.95, 6.05), "store", (7.5, 6.3))
-arrow((7.95, 5.55), (7.1, 5.55), "read", (7.5, 5.3))
-arrow((4.4, 5.2), (1.7, 4.2), "load → inspect", (2.8, 4.75))
-arrow((3.05, 3.5), (3.9, 3.5), "clear", (3.48, 3.8))
-arrow((7.1, 3.5), (7.95, 3.5), "predictions", (7.5, 3.8))
-arrow((1.6, 2.8), (3.3, 0.95), "hold", (1.8, 1.85))
-arrow((9.35, 2.8), (7.7, 0.95), "diagnostics", (9.35, 1.8))
-arrow((5.5, 2.8), (5.5, 1.6), "failure / budget", (5.5, 2.15))
-ax.text(5.5, 6.75, "New integration: data gate controls modeling; predictions drive diagnosis",
-        ha="center", fontsize=12)
-fig.tight_layout()
-fig.savefig(OUT / "architecture_diagram.png", dpi=180, bbox_inches="tight")
-plt.show()
-plt.close(fig)
-""")
-md("""
-## 3. Complete executable implementation
-The following is the actual `integrated_system.py` module used below.
-Its fixed features exclude target-derived counts and identifiers.
-The forest recipe follows the prior capstone, grounded in the ensemble approach
-of Breiman (2001). This integration does not claim to improve its predictive score.
-""")
-code("""
+display(Image(filename=str(OUT / "architecture_diagram.png")))
 display(Code(inspect.getsource(integrated_system), language="python"))
 """)
 md("""
-## 4. Execute the integrated system and designed gate/failure cases
-The original data come from real 2011–2012 Capital Bikeshare logs distributed
-by UCI (Fanaee-T, 2013; Fanaee-T & Gama, 2014). The released file has 17,379
-records, despite a different landing-page count. In-memory fixtures deliberately
-alter copies to exercise gates; these are not alleged defects in the field data.
-The agent accepts only a registered historical review request, not arbitrary paths.
+## 2. Saved real-provider suite: provenance before interpretation
+These are genuine saved provider responses, not scripted test doubles.
+The evaluator records thirteen designed development cases, including one invalid
+structured request blocked without any provider call. They are not a held-out
+reliability benchmark. Earlier live attempts are retained separately.
 """)
 code("""
-result, scenarios = evaluate(OUT)
-display(result["observations"])
+manifest = json.loads((SAVED / "run_manifest.json").read_text())
+assert manifest["implementation_sha256"] == hashlib.sha256(Path("integrated_system.py").read_bytes()).hexdigest()
+assert manifest["evaluator_sha256"] == hashlib.sha256(Path("evaluate_system.py").read_bytes()).hexdigest()
+result = json.loads((SAVED / "original.json").read_text())
+scenarios = pd.read_csv(SAVED / "scenario_summary.csv")
+display(manifest)
+display(scenarios[["scenario", "status", "model_turns", "tool_calls"]])
+print("Actual full-run tool sequence:", " → ".join(result["completed_tools"]))
+assert result["status"] == "completed" and result["full_pipeline_coverage"]
+""")
+md("""
+## 3. Inspect the reasoning/action/observation loop
+Every requested action below came from an actual AIMessage. Every tool observation
+was returned in a ToolMessage before the next LLM decision. Final prose is separate
+from authoritative computed observations. This does not expose private model reasoning.
+Read `outputs/explanation_audit.json`: current prose still contains unsupported
+interpretations, including an untested error mechanism and an accuracy judgment
+without an operational tolerance. The stored LLM narrative is evidence to critique,
+not a model answer to memorize.
+""")
+code("""
+for message in result["messages"]:
+    if message["role"] == "ai":
+        print("\\nMODEL:", message["content"])
+        for call in message["tool_calls"]:
+            print("SELECTED:", call["name"], "| PUBLIC REASON:", call["args"]["reason"])
+    elif message["role"] == "tool":
+        print("OBSERVATION:", message["name"], message["content"])
 display(pd.DataFrame(result["trace"]))
-display(scenarios)
-assert result["status"] == "completed"
-assert result["completed_tools"] == ["load", "quality", "split", "model", "diagnose"]
 """)
 md("""
-## 5. How integration changes behavior
-Six flawed-input fixtures are held after load/quality, **before any fitting**.
-The allocation request is blocked with zero calls. A two-call budget ends
-incomplete even though data checks found no issue. An injected model failure
-prevents the statistical diagnosis; it cannot silently reuse old predictions.
-These observations show one component controlling the next, not merely
-placing prior outputs beside one another.
+## 4. A separate live focused request — this cell requires the API secret
+The following cell makes a **new real MiniMax call sequence**. It is not replaying
+the saved suite. Supply `MINIMAX_API_KEY` through environment/Secrets; never paste
+it into the notebook. Viewing the already executed notebook needs no key.
+Future provider wording and decisions may differ.
 """)
 code("""
-for name in ["missing_value", "allocation_request", "low_budget", "model_failure"]:
-    case = json.loads((OUT / f"{name}.json").read_text())
-    print("\\n", name, case["status"], case["reason"])
-    display(pd.DataFrame(case["trace"]))
+live = SynthesisAgent().run(Request(scope="focused",
+    instructions="Check only data quality. Do not split, fit a model or run diagnostics. Explain the limits."))
+(OUT / "notebook_live_demo.json").write_text(json.dumps(live, indent=2, allow_nan=False) + "\\n")
+display({k: live[k] for k in ["status", "disposition", "tool_calls", "model_turns", "completed_tools"]})
+print(live["answer"])
+assert live["status"] == "completed"
+assert live["completed_tools"] == ["load", "quality"]
 """)
 md("""
-## 6. Predictive performance and new statistical interpretation
-The original benchmark has 13,891 earlier training rows and 3,488 later test
-rows over 147 dates. No same-day overlap occurs. The twelve predictors include
-contemporaneously observed weather: this is **retrospective conditional
-estimation**, not an advance weather-based forecast. The 165 unrecorded clock
-hours are not invented as zero demand.
+## 5. Requests and observations change behavior
+Quality-only requests stop after data checks. Hourly-only analysis requires a
+model but omits daily association and demand stress. Six flawed-input fixtures
+cannot reach fitting. Natural-language allocation is refused; a structured
+invalid intent is separately blocked before the model. Budget and model-tool
+failure cases remain incomplete, never borrowing an old success.
 
-The forest has RMSE 104.65 versus 232.56 rentals/hour for the training-mean
-baseline; its mean absolute miss is 72.57 rentals/hour. This reproduces Project
-3, rather than demonstrating a new accuracy improvement. The new diagnosis
-asks where that performance might mislead an operations analyst.
+Initial real runs attempted to bypass or repeat checks after quality findings.
+Guards prevented execution; explicit permission feedback was then added.
+The initial suite is retained in `outputs/development_attempts/first_live_suite`.
+A second suite exposed a sign reversal and hours/days confusion in generated prose;
+its raw responses remain in `second_live_suite`. Contracts now define signs and
+units explicitly. Positive actual-minus-predicted error means underestimation.
+These are observed limitations and development changes, not a universal truthfulness claim.
 """)
 code("""
-p = pd.read_csv(OUT / "test_predictions.csv")
-daily = pd.read_csv(OUT / "daily_diagnostics.csv")
-hourly = pd.read_csv(OUT / "hourly_diagnostics.csv")
-display(pd.DataFrame.from_dict({k: result["observations"]["model"][k]
-                               for k in ["forest", "baseline"]}, orient="index"))
-display(daily.head())
+for name in ["quality_only", "hourly_only", "missing_value", "allocation_request",
+             "blocked_structured_request", "low_budget", "model_failure"]:
+    case = json.loads((SAVED / f"{name}.json").read_text())
+    print("\\n", name, case["status"], case["disposition"])
+    print("Selected:", case["completed_tools"], "| Model turns:", case["model_turns"])
+    print("Answer:", case["answer"])
+""")
+md("""
+## 6. Same mathematics, newly controlled execution
+Loading, quality, chronological splitting and the model method are unchanged.
+The former combined diagnosis is exposed as three independently selectable tools.
+The forest retains 150 trees, depth 14, minimum leaf 2 and seed 20261119.
+Target-derived counts and identifiers remain excluded. Preprocessing fits only
+earlier records; whole dates separate 13,891 development and 3,488 test records.
+
+This is the already-seen Project 3 historical benchmark, not independent new
+research validation. Observed weather prevents calling it an advance forecast.
+The 165 missing clock hours are not invented as zero demand.
+""")
+code("""
+observed = result["observations"]
+display(pd.DataFrame({name: observed["model"][name] for name in ["forest", "baseline"]}).T)
+p = pd.read_csv(SAVED / "test_predictions.csv")
+daily = pd.read_csv(SAVED / "daily_diagnostics.csv")
+hourly = pd.read_csv(SAVED / "hourly_diagnostics.csv")
+display(observed["demand_stress"])
+display(observed["daily_association"])
 display(hourly)
-display(result["observations"]["diagnose"])
+assert len(p) == 3488 and len(daily) == 147
+display(json.loads((OUT / "numerical_equivalence.json").read_text()))
 """)
 md("""
-The development-only 75th-percentile rental count is **258**. Among the 1,413
-test hours at or above that count, MAE is **123.80** and mean signed error is
-**+119.74** rentals/hour (actual minus prediction). Among 2,075 other test hours,
-MAE is **37.69**. This is a retrospective stress grouping using actual outcomes;
-it is not a rule that can identify future demand groups before outcomes arrive.
-The worst clock hour by MAE is 16:00; all 24 hourly groups are included above.
+## 7. Plain-language explanation and responsible use
+The system checks historical rental records, builds an estimate only after the
+checks allow it, and shows where estimates miss. Average absolute error is about
+73 rentals per recorded hour; in busier actual hours it is about 124, usually
+because estimates are too low. Completed rentals cannot reveal everyone who
+wanted a bike but could not obtain one.
 
-Following Project 2's rank-based reasoning, the new daily mean temperature /
-mean signed residual Spearman coefficient is **−0.0771** across **147 dates**.
-It is a weak descriptive monotonic association, not a temperature effect or
-evidence that all weather errors are absent. SciPy defines the coefficient as
-rank-based association (SciPy developers, n.d.). Serial dependence,
-season/year confounding, aggregation and repeated use of the earlier benchmark
-preclude treating this as a confirmatory independent-samples test. No
-significance claim or p-value is reported, and no tuning follows this diagnostic.
+The demand threshold is 258 from development data, but group membership uses
+actual test outcomes. This is retrospective stress analysis, not a future routing
+rule. Daily temperature/mean-residual Spearman is −0.0771 over 147 dates:
+descriptive only, with no p-value or causal claim. R-squared .774754 is not
+77.5% classification accuracy. No station/demographic fairness audit, cost saving,
+emissions benefit, production readiness or permission to move bikes is established.
+
+The LLM can misunderstand evidence or disobey instructions. Computed tables,
+enforced permissions and human review remain necessary. No persistent memory,
+OS isolation, global deadline or broad injection-resistance claim is made.
 """)
 md("""
-## 7. Plain-language interpretation
-The program checks a historical bike-rental table before building an estimate.
-If a test copy contains missing information or a repeated date-and-hour record,
-it stops and asks for a person to review it. On the original records, its
-estimates miss by about 73 rentals per hour on average. During busier hours
-the average miss is about 124 rentals, usually because the estimate is too low.
-That makes the results useful for investigating weaknesses, not for deciding
-how many bikes to move. The table records completed rentals, so it cannot tell
-us how many people wanted a bike but could not get one.
-""")
-md("""
-## 8. Responsible use, boundaries and professional reflection
-Observed rental counts reflect access as well as desire to travel. Automatically
-rewarding high recorded use with more bikes could neglect areas with existing
-service shortages. These aggregate records contain no station or demographic
-evidence adequate to audit that risk. Hourly error groups are **not a fairness
-audit**, and no emissions, ridership, cost or service-equity benefit was measured.
+## References and defense preparation
+Breiman (2001), *Random forests*: https://doi.org/10.1023/A:1010933404324
 
-Implemented protections are fixed read-only tool names, request restrictions,
-source fingerprint, bounded calls, data gates, explicit failure statuses and human
-review; they are not NIST certification (NIST, 2023). Deployment would additionally
-need current local/station data, weather forecasts with known availability,
-service-equity review, timeouts/isolation, access controls and accountable
-monitoring. No LLM, data-repair capability, persistent memory, dispatch tool,
-causal inference or prediction intervals are implemented.
+Fanaee-T (2013), *Bike Sharing*: https://doi.org/10.24432/C5W894
 
-The important synthesis lesson is that a lower average error does not establish
-operational suitability. A quality gate can prevent some bad computations, while
-statistical diagnosis can expose the limits of apparently good model scores.
-Edward should personalize this reflection and be ready to explain each design
-choice; Project 8's presentation and mentor defense remain separate.
-""")
-md("""
-## References
-Breiman, L. (2001). Random forests. *Machine Learning, 45*, 5–32.
-https://doi.org/10.1023/A:1010933404324
+Fanaee-T & Gama (2014): https://doi.org/10.1007/s13748-013-0040-3
 
-Fanaee-T, H. (2013). *Bike Sharing* [Data set]. UCI Machine Learning Repository.
-https://doi.org/10.24432/C5W894
+LangChain, *Workflows and agents*:
+https://docs.langchain.com/oss/python/langgraph/workflows-agents
 
-Fanaee-T, H., & Gama, J. (2014). Event labeling combining ensemble detectors
-and background knowledge. *Progress in Artificial Intelligence, 2*, 113–127.
-https://doi.org/10.1007/s13748-013-0040-3
+NIST (2023), *AI RMF 1.0*: https://doi.org/10.6028/NIST.AI.100-1
 
-National Institute of Standards and Technology. (2023).
-*Artificial intelligence risk management framework (AI RMF 1.0)* (NIST AI 100-1).
-https://doi.org/10.6028/NIST.AI.100-1
+SciPy, *spearmanr*: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.spearmanr.html
 
-SciPy developers. (n.d.). *scipy.stats.spearmanr*.
-https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.spearmanr.html
-""")
-md("""
-## Integrated artifact summary
-This new bike-share review pipeline combines Project 6's bounded control,
-Project 3's fixed demand model and Project 2's statistical interpretation.
-Its quality gate controls whether fitting and diagnosis may run, and actual
-model residuals drive the new diagnostic outputs.
-The original data reproduce the prior benchmark while the new analysis exposes
-larger underestimation during higher-demand hours.
-Designed faulty inputs and blocked requests demonstrate limited safeguards,
-not comprehensive security or production readiness.
-The final evidence remains with a human and cannot justify automatic allocation,
-causal conclusions or fairness claims.
+The formal Project 8 talk remains about Project 7 only. Use the included revised
+defense notes; old statements that this system has no LLM or only five tools
+are obsolete. Upload/submission and mentor scheduling remain separate user actions.
 """)
 notebook = nbf.v4.new_notebook(cells=cells)
 notebook.metadata.kernelspec = {"display_name": "Python 3", "language": "python", "name": "python3"}

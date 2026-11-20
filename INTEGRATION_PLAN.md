@@ -1,60 +1,65 @@
-# Integration plan, written before the new pipeline was executed
+# Integration plan — revised agentic contribution
 
-Industry: urban bike-share operations / sustainable transportation.
-Problem: an analyst needs trustworthy retrospective demand estimates and
-interpretable evidence about their errors before considering operational use.
-Not a live forecast, station allocation tool, causal analysis or deployment.
+The original deterministic plan preceded the first Project 7 implementation.
+This revision follows Project 6's reviewer feedback and its corrected LLM
+implementation. Development findings informed the revision; this is not a claim
+of preregistration or a held-out experiment.
 
-## Three explicit contributions
+## Bounded industry problem
 
-1. **Project 3: Machine Learning Foundations.** Refit the same fixed random
-   forest, features, baseline and chronological 80/20-date split. Reuse the
-   model recipe rather than introduce a new algorithm or hyperparameter search.
-2. **Project 2: Statistical Analysis.** Transfer descriptive group summaries,
-   Spearman rank association and disciplined noncausal/plain-language
-   interpretation. Compute a new descriptive association between daily mean
-   temperature and daily mean signed model error, without an independence-based
-   p-value. Do not transfer the educational study's data, effect size or p-value.
-3. **Project 6: Agentic Workflows.** Adapt structured requests, read-only
-   allowlisted tools, per-run memory, aggregate observations, bounded calls,
-   stop-on-failure and human review into a new five-stage orchestrator.
-   Unlike the earlier penguin reviewer, validation findings here stop
-   downstream model fitting and statistical diagnosis.
+Urban bike-share analysts need inspectable retrospective model evidence.
+The system cannot move bikes, repair data, serve a live forecast or establish
+causal/fairness/business outcomes. Completed rentals are not unmet demand.
 
-## New interaction
+## Three prior contributions
 
-Registered CSV → load → dataset-specific quality gate → chronological split →
-fixed model/baseline → daily/hourly error diagnosis → human review report.
-Any gate finding holds the run; failures and budget exhaustion are incomplete.
-No tool edits data, sends messages, dispatches bikes or trains on test labels.
-No LLM, API credentials, deep learning or generative component is necessary:
-irrelevant techniques would increase complexity without serving this problem.
+1. Project 3 supplies unchanged loading, quality/split conventions, fixed forest,
+   features and mean baseline. No search or retuning follows the diagnostics.
+2. Project 2 supplies descriptive group/rank reasoning and nontechnical,
+   noncausal communication, not school records or school-study effect sizes.
+3. Corrected Project 6 supplies MiniMax/LangGraph agency: persona, instructions,
+   explicit messages, dynamic tool calls, observations, run-local memory and guards.
+   No penguin data enter the bike model.
 
-## Evaluation fixed before implementation
+## Integrated behavior
 
-Run the unmodified historical source end-to-end. Report both model scores, full
-test predictions, day/hour error summaries, training-defined upper-quartile
-demand stress errors and descriptive daily Spearman correlation. Keep the prior
-model unchanged even if scores lose. The same benchmark has already been seen
-in Project 3, so it is not independent evidence of performance on a new city,
-new deployment or unseen research test.
+User task → LLM → guarded selected tool → aggregate observation → LLM.
+Seven available tools expose load, quality, split, model and three independent
+post-model diagnostics: daily association, hourly errors and demand stress.
+The model chooses applicable evidence and when to finish; guards enforce the
+computation prerequisites without choosing its next action.
 
-Designed scenarios (declared fixtures, never presented as field defects):
-missing value; duplicate timestamp; invalid hour; unknown weather category;
-nonfinite measurement; missing required column. All should hold after the
-quality gate without splitting, fitting or diagnosis.
-An automatic-allocation request should be blocked before any tool.
-A two-call budget should stop before split.
-An injected model-tool failure should stop before statistical diagnosis.
-Source hashes and fixture equality should demonstrate no data modification.
+Quality-only requests need no fitting. Hourly-only reviews need the model but
+not the other diagnostics. Quality findings prohibit all further tool execution.
+Failures and insufficient budgets cannot become approval; partial pipeline
+coverage is explicit even when a focused task is completed.
 
-Known limitations to retain: high errors in demanding periods, contemporaneous
-weather required, historical city-specific data, recorded rentals not unmet
-demand, absent station/demographic data, incomplete plausibility checks and
-no causal interpretation of descriptive error associations.
+## Development evaluation
 
-Deliver an integrated executed notebook, full implementation/configuration,
-architecture diagram, trace/scenario evidence, pinned prior-artifact map,
-original data/attribution, actual pip freeze and tested reproducibility.
-Write a 1,500–2,000-word APA synthesis paper with the seven required sections.
-Project 8 presentation/mentor defense is not part of this submission.
+Use thirteen declared cases: unmodified source; six flawed-input fixtures;
+quality-only and hourly-only natural-language requests; natural-language allocation;
+structured invalid intent; two-call budget; injected model failure.
+Record actual model messages, public justifications, tool observations, usage
+metadata and source/code/config fingerprints. Do not replace failed responses
+or treat designed cases as a universal success rate.
+
+Initial real attempts to continue/repeat checks after quality findings are retained
+under `outputs/development_attempts/first_live_suite`. Guards stopped execution;
+explicit hold feedback was added. Current and development manifests are distinct.
+
+Verify unchanged numerical methods against the previous Project 7 implementation
+and byte-compare predictions and diagnostic tables. The historical benchmark
+has already been seen in Project 3; equality checks integration, not new
+generalization. Software tests with scripted responses are separately labeled.
+
+## Responsible use and delivery
+
+Only instructions and aggregate observations go to MiniMax. The model can
+misinterpret evidence or ignore instructions; machine-enforced state and human
+checking are authoritative. Keep source read-only, no operational action tools,
+seven execution/sixteen model-turn bounds and provider timeout. These are not
+OS isolation, scientific certification or an end-to-end deadline.
+
+Deliver executed notebook, source/config/data, actual freeze, fresh real traces,
+architecture and revised 1,500–2,000-word APA paper. Update defense notes to match.
+Project 8 remains a separate Project 7-focused presentation and live discussion.

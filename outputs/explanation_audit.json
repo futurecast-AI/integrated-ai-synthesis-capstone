@@ -1,0 +1,32 @@
+{
+  "scope": "Manual check of selected numerical, sign, unit and inference claims; not an exhaustive semantic evaluator. Raw model responses are unchanged.",
+  "current_manifest_implementation": "c30f5b2f1ef9e49b0262903b3e0226a1266c4d75853de4919a4a1fd9fd5b8d07",
+  "development_findings": [
+    {
+      "suite": "first_live_suite",
+      "finding": "Model attempted continuation/repetition after quality findings; application guards prevented execution.",
+      "change": "Explicit hold permissions and rejected-action feedback."
+    },
+    {
+      "suite": "second_live_suite",
+      "finding": "Model reversed hourly residual signs, called hourly stress records days and overclaimed negative baseline R-squared.",
+      "change": "Explicit signs/units in tool contracts and persona."
+    }
+  ],
+  "current_core_checks": {
+    "seven_tools_completed": true,
+    "residual_definition": "actual minus predicted; positive underestimation; negative overestimation",
+    "counts_are_hourly_records": true,
+    "computed_hourly_group_n_range": [
+      142,
+      146
+    ]
+  },
+  "remaining_current_narrative_limits": [
+    "Calling overnight errors accurate has no operator-specified tolerance.",
+    "A proposed daily-cycle compression mechanism and equivalence of stress/hour patterns are hypotheses, not established causes.",
+    "Weak rank correlation does not establish absence of other weather effects.",
+    "A new run starts fresh; no supported resume-from-model capability exists."
+  ],
+  "authority": "Use computed observations and human-corrected interpretation; do not treat generated prose as a correctness certificate."
+}
