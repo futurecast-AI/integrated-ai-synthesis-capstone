@@ -1,0 +1,14 @@
+scenario,status,disposition,model_turns,tool_calls,selected_tools,evidence_type
+original,completed,human_review,9,7,load -> quality -> split -> model -> hourly_errors -> daily_association -> demand_stress,live_provider_response
+missing_value,held,human_review,3,2,load -> quality,live_provider_response
+duplicate_key,held,human_review,3,2,load -> quality,live_provider_response
+invalid_hour,held,human_review,3,2,load -> quality,live_provider_response
+unknown_weather,held,human_review,3,2,load -> quality,live_provider_response
+nonfinite,held,human_review,3,2,load -> quality,live_provider_response
+missing_column,held,human_review,3,2,load -> quality,live_provider_response
+quality_only,completed,partial_review,3,2,load -> quality,live_provider_response
+hourly_only,completed,partial_review,6,5,load -> quality -> split -> model -> hourly_errors,live_provider_response
+allocation_request,completed,partial_review,1,0,,live_provider_response
+blocked_structured_request,blocked,incomplete_review,0,0,,no_provider_response
+low_budget,budget_exhausted,incomplete_review,3,2,load -> quality,live_provider_response
+model_failure,failed,incomplete_review,5,4,load -> quality -> split,live_provider_response

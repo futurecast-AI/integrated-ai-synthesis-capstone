@@ -1,0 +1,4 @@
+*.pdf binary
+*.docx binary
+*.png binary
+data/hour.csv -text whitespace=cr-at-eol
